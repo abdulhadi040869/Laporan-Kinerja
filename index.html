@@ -8,93 +8,90 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
-        .no-print { display: block; }
-        .print-only { display: none; }
+        .no-print { display: block; } .print-only { display: none; }
         .header-box { background: #1a5e3a; color: white; padding: 15px; border-bottom: 5px solid #ffc107; }
         .header-logo { height: 60px; margin-right: 15px; }
         .nav-tabs .nav-link.active { background-color: #1a5e3a; color: white; border: none; }
-        .nav-link { color: #1a5e3a; font-weight: bold; }
         .btn-hijau { background: #1a5e3a; color: white; border: none; }
         .btn-hijau:hover { background: #144d2f; color: white; }
-        @media print {
-            .no-print { display: none !important; }
-            .print-only { display: block !important; }
-            body { background: white; }
-            .container { width: 100% !important; max-width: 100% !important; padding: 0; }
-            @page { size: portrait; margin: 1cm; }
-        }
         .kegiatan-row { background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 10px; position: relative; }
         .btn-remove-row { position: absolute; top: 5px; right: 5px; color: #dc3545; cursor: pointer; border: none; background: none; font-size: 1.2rem; }
         .table-print { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .table-print th, .table-print td { border: 1px solid black; padding: 8px; font-size: 11px; text-align: center; }
-        .table-print th { background-color: #f2f2f2 !important; -webkit-print-color-adjust: exact; }
         .logo-pdf { position: absolute; left: 0; top: 0; height: 75px; }
-        .btn-xs { padding: 1px 5px; font-size: 10px; }
+        #auth-page { max-width: 400px; margin-top: 60px; }
+        .btn-xs { padding: 2px 6px; font-size: 11px; }
+        @media print {
+            .no-print { display: none !important; } .print-only { display: block !important; }
+            body { background: white; } .container { width: 100% !important; max-width: 100% !important; padding: 0; }
+            @page { size: portrait; margin: 1cm; }
+        }
     </style>
 </head>
 <body>
 
-<div class="header-box no-print shadow-sm text-center">
-    <div class="container d-flex align-items-center justify-content-center">
-        <img src="https://iili.io/qhAg7kv.png" class="header-logo" alt="Logo">
-        <div class="text-start">
-            <h4 class="mb-0">MAN 2 KOTA BANJARMASIN</h4>
-            <small>Sistem Laporan Kinerja Guru & Tendik</small>
+<div id="auth-page" class="container no-print">
+    <div class="card shadow border-0 p-4 mx-auto">
+        <div class="text-center mb-4"><img src="https://iili.io/qhAg7kv.png" style="height: 70px;"><h5 class="mt-3 fw-bold text-success">E-LAPORAN</h5></div>
+        <div id="login-section">
+            <div class="mb-3"><label class="small fw-bold">NIP</label><input type="text" id="login-nip" class="form-control"></div>
+            <div class="mb-3"><label class="small fw-bold">Password</label><input type="password" id="login-pass" class="form-control"></div>
+            <button class="btn btn-hijau w-100" onclick="prosesLogin()">Masuk</button>
+            <hr><p class="text-center small">Belum punya akun? <a href="javascript:void(0)" onclick="toggleAuth(true)">Daftar</a></p>
+        </div>
+        <div id="daftar-section" style="display:none;">
+            <div class="mb-2"><label class="small fw-bold">Nama</label><input type="text" id="reg-nama" class="form-control"></div>
+            <div class="mb-2"><label class="small fw-bold">NIP</label><input type="text" id="reg-nip" class="form-control"></div>
+            <div class="mb-3"><label class="small fw-bold">Password</label><input type="password" id="reg-pass" class="form-control"></div>
+            <button class="btn btn-primary w-100" onclick="prosesDaftar()">Simpan</button>
+            <hr><p class="text-center small">Sudah punya akun? <a href="javascript:void(0)" onclick="toggleAuth(false)">Login</a></p>
         </div>
     </div>
 </div>
 
-<div class="container mt-4 no-print">
-    <ul class="nav nav-tabs mb-4" id="laporanTab">
-        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#input-page">📥 Input Laporan</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#filter-page">🔍 Cari & Cetak PDF</button></li>
-    </ul>
+<div id="main-app" style="display:none;">
+    <div class="header-box no-print shadow-sm"><div class="container d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center"><img src="https://iili.io/qhAg7kv.png" class="header-logo"><div><h5 class="mb-0">MAN 2 BANJARMASIN</h5><small id="user-display" class="text-warning fw-bold"></small></div></div>
+        <button class="btn btn-danger btn-sm" onclick="location.reload()">Logout</button>
+    </div></div>
 
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="input-page">
-            <form id="formLaporan" class="card p-4 shadow-sm border-0">
-                <div class="row g-3 mb-4">
-                    <div class="col-md-3"><label class="fw-bold">Tanggal</label><input type="date" id="tanggal" class="form-control" required></div>
-                    <div class="col-md-3"><label class="fw-bold">Nama Pegawai</label><input type="text" id="nama" class="form-control" placeholder="Nama Lengkap" required></div>
-                    <div class="col-md-3"><label class="fw-bold">NIP</label><input type="text" id="nip" class="form-control" placeholder="Bila tdk ada isi dengan angka 1"required></div>
-                    <div class="col-md-3"><label class="fw-bold">Jabatan</label><input type="text" id="jabatan" class="form-control" placeholder="Guru Fiqih" required></div>
-                </div>
-                <div id="wrapperKegiatan">
-                    <div class="kegiatan-row">
-                        <div class="row g-2 pe-4">
-                            <div class="col-md-5"><input type="text" placeholder="Kegiatan" class="form-control act-nama" required></div>
-                            <div class="col-md-2"><input type="time" class="form-control act-mulai" required></div>
-                            <div class="col-md-2"><input type="time" class="form-control act-akhir" required></div>
-                            <div class="col-md-3"><input type="text" placeholder="Ket" class="form-control act-ket"></div>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-outline-success btn-sm mt-2" onclick="tambahBaris()">+ Tambah Baris</button>
-                <button type="submit" id="btnSimpan" class="btn btn-hijau btn-lg w-100 mt-4 shadow">SIMPAN DATA</button>
-            </form>
-        </div>
+    <div class="container mt-4 no-print">
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1">📥 Input</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab2">🔍 Kelola & Cetak</button></li>
+        </ul>
 
-        <div class="tab-pane fade" id="filter-page">
-            <div class="card p-4 shadow-sm border-0">
-                <div class="row g-3 align-items-end mb-4">
-                    <div class="col-md-4"><label class="fw-bold">Nama Pegawai</label><input type="text" id="cariNama" class="form-control"></div>
-                    <div class="col-md-3">
-                        <label class="fw-bold">Bulan</label>
-                        <select id="cariBulan" class="form-select">
-                            <option value="">-- Semua Bulan --</option>
-                            <option>Januari</option><option>Februari</option><option>Maret</option><option>April</option><option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option><option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
-                        </select>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="tab1">
+                <form id="formLaporan" class="card p-4 shadow-sm border-0">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3"><label class="fw-bold small">Tanggal</label><input type="date" id="tanggal" class="form-control" required></div>
+                        <div class="col-md-3"><label class="fw-bold small">Nama</label><input type="text" id="nama" class="form-control bg-light" readonly></div>
+                        <div class="col-md-3"><label class="fw-bold small">NIP</label><input type="text" id="nip" class="form-control bg-light" readonly></div>
+                        <div class="col-md-3"><label class="fw-bold small">Jabatan</label><input type="text" id="jabatan" class="form-control" required></div>
                     </div>
-                    <div class="col-md-5">
-                        <div class="btn-group w-100">
-                            <button class="btn btn-primary" onclick="ambilData()">🔍 Cari Data</button>
-                            <button id="btnHapusPegawai" class="btn btn-outline-danger" onclick="hapusData()" style="display:none;">🗑️ Hapus Semua</button>
-                        </div>
+                    <div id="wrapperKegiatan"><div class="kegiatan-row"><div class="row g-2 pe-4">
+                        <div class="col-md-5"><input type="text" placeholder="Kegiatan" class="form-control act-nama" required></div>
+                        <div class="col-md-2"><input type="time" class="form-control act-mulai" required></div>
+                        <div class="col-md-2"><input type="time" class="form-control act-akhir" required></div>
+                        <div class="col-md-3"><input type="text" placeholder="Ket" class="form-control act-ket"></div>
+                    </div></div></div>
+                    <button type="button" class="btn btn-outline-success btn-sm mt-2" onclick="tambahBaris()">+ Tambah Baris</button>
+                    <button type="submit" id="btnSimpan" class="btn btn-hijau btn-lg w-100 mt-4 shadow">SIMPAN DATA</button>
+                </form>
+            </div>
+
+            <div class="tab-pane fade" id="tab2">
+                <div class="card p-4 shadow-sm border-0">
+                    <div class="row g-3 align-items-end mb-4">
+                        <div class="col-md-5"><label class="fw-bold small">Nama</label><input type="text" id="cariNama" class="form-control bg-light" readonly></div>
+                        <div class="col-md-4"><label class="fw-bold small">Bulan</label><select id="cariBulan" class="form-select"><option value="">-- Semua --</option><option>Januari</option><option>Februari</option><option>Maret</option><option>April</option><option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option><option>September</option><option>Oktober</option><option>November</option><option>Desember</option></select></div>
+                        <div class="col-md-3"><button class="btn btn-primary w-100" onclick="ambilData()">Cari</button></div>
                     </div>
+                    <div id="loading" style="display:none;" class="text-center my-3 text-success">⌛ Memuat data...</div>
+                    <div id="hasilFilter"></div>
+                    <button id="btnCetak" class="btn btn-danger btn-lg mt-4 w-100 shadow" style="display:none;" onclick="window.print()">🖨️ CETAK PDF</button>
                 </div>
-                <div id="loading" style="display:none;" class="text-center my-3 text-success fw-bold">⌛ Memproses...</div>
-                <div id="hasilFilter"></div>
-                <button id="btnCetak" class="btn btn-danger btn-lg mt-4 w-100 shadow" style="display:none;" onclick="window.print()">🖨️ CETAK LAPORAN (PDF)</button>
             </div>
         </div>
     </div>
@@ -102,28 +99,44 @@
 
 <div class="print-only p-4" id="printArea" style="position: relative;">
     <img src="https://iili.io/qhAg7kv.png" class="logo-pdf">
-    <center>
-        <h4>LAPORAN KINERJA HARIAN</h4>
-        <h5 class="text-uppercase">MAN 2 KOTA BANJARMASIN</h5>
-        <h6 class="text-uppercase">BULAN: <span id="bulanPrint"></span></h6>
-        <hr style="border: 1px solid black; opacity: 1; margin-bottom: 20px;">
-    </center>
+    <center><h4>LAPORAN KINERJA HARIAN</h4><h5>MAN 2 KOTA BANJARMASIN</h5><h6>BULAN: <span id="bulanPrint"></span></h6><hr style="border: 1px solid black; opacity: 1;"></center>
     <div id="infoPegawaiPrint" style="font-size: 13px; margin-bottom: 15px;"></div>
     <table class="table-print" id="tabelPrint"></table>
-    <br>
     <table style="width: 100%; text-align: center; font-size: 12px; margin-top: 20px;">
-        <tr>
-            <td width="33%">Mengetahui,<br>Pengawas Madrasah<br><br><br><br><b>ILDA RUHAMA, M.Pd</b></td>
-            <td width="33%">Mengetahui,<br>Kepala Madrasah<br><br><br><br><b>Dr. ABDUL HADI, M.PKim</b></td>
-            <td width="34%">Banjarmasin, <span id="tglSekarang"></span><br>Pegawai,<br><br><br><br><b id="namaPrint"></b></td>
-        </tr>
+        <tr><td width="33%">Mengetahui,<br>Pengawas Madrasah<br><br><br><b>ILDA RUHAMA, M.Pd</b></td><td width="33%">Mengetahui,<br>Kepala Madrasah<br><br><br><b>Dr. ABDUL HADI, M.PKim</b></td><td width="34%">Banjarmasin, <span id="tglSekarang"></span><br>Pegawai,<br><br><br><b id="namaPrint"></b></td></tr>
     </table>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzwVU3fRY8v52oKrLy0AaNyJCmapTHZzRyxKr79pYhjp4QDEqzWpQjoYuWxSvM2iwXB/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwbT0F4Zk6vsJsT5BYPHbK0rjfyS8p_w10DhlKR_0d3iA-V96u5uOGboURJUQskpQQ/exec';
     let globalData = [];
+
+    function toggleAuth(isDaftar) {
+        document.getElementById('login-section').style.display = isDaftar ? 'none' : 'block';
+        document.getElementById('daftar-section').style.display = isDaftar ? 'block' : 'none';
+    }
+
+    function prosesDaftar() {
+        const data = { action: 'daftar', nama: document.getElementById('reg-nama').value, nip: document.getElementById('reg-nip').value, password: document.getElementById('reg-pass').value };
+        fetch(scriptURL, { method: 'POST', body: JSON.stringify(data), mode: 'no-cors' }).then(() => { alert("Berhasil Daftar!"); toggleAuth(false); });
+    }
+
+    function prosesLogin() {
+        const nip = document.getElementById('login-nip').value;
+        const pass = document.getElementById('login-pass').value;
+        fetch(scriptURL, { method: 'POST', body: JSON.stringify({action: 'login', nip: nip, password: pass}) })
+        .then(res => res.json()).then(res => {
+            if(res.status === "success") {
+                document.getElementById('auth-page').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                document.getElementById('user-display').innerText = "Pegawai: " + res.nama;
+                document.getElementById('nama').value = res.nama;
+                document.getElementById('nip').value = res.nip;
+                document.getElementById('cariNama').value = res.nama;
+            } else { alert("Login Gagal!"); }
+        });
+    }
 
     function tambahBaris() {
         const wrapper = document.getElementById('wrapperKegiatan');
@@ -139,129 +152,88 @@
 
     function formatKeDetik(val) {
         if (!val) return "00:00:00";
-        let str = val.toString();
-        if (str.includes("T") || str.includes("GMT")) {
+        if (val.toString().includes("T") || val.toString().includes("GMT")) {
             let d = new Date(val);
-            return d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0') + ":" + d.getSeconds().toString().padStart(2, '0');
+            return d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0') + ":00";
         }
-        return str.length === 5 ? str + ":00" : str;
+        return val.length === 5 ? val + ":00" : val;
     }
 
+    // --- PERBAIKAN DI SINI: TIDAK RELOAD LAGI ---
     document.getElementById('formLaporan').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('btnSimpan');
-        btn.disabled = true; btn.innerHTML = "⌛ Menyimpan...";
-        const data = {
-            action: 'simpan',
-            tanggal: document.getElementById('tanggal').value,
-            nama: document.getElementById('nama').value,
-            nip: document.getElementById('nip').value,
-            jabatan: document.getElementById('jabatan').value,
-            kegiatan: []
-        };
+        btn.disabled = true; btn.innerText = "⌛ Menyimpan...";
+        
+        const data = { action: 'simpan', tanggal: document.getElementById('tanggal').value, nama: document.getElementById('nama').value, nip: document.getElementById('nip').value, jabatan: document.getElementById('jabatan').value, kegiatan: [] };
         document.querySelectorAll('.kegiatan-row').forEach(row => {
-            data.kegiatan.push({
-                nama_kegiatan: row.querySelector('.act-nama').value,
-                jam_mulai: row.querySelector('.act-mulai').value,
-                jam_berakhir: row.querySelector('.act-akhir').value,
-                keterangan: row.querySelector('.act-ket').value
-            });
+            data.kegiatan.push({ nama_kegiatan: row.querySelector('.act-nama').value, jam_mulai: row.querySelector('.act-mulai').value, jam_berakhir: row.querySelector('.act-akhir').value, keterangan: row.querySelector('.act-ket').value });
         });
+
         fetch(scriptURL, { method: 'POST', body: JSON.stringify(data), mode: 'no-cors' })
-        .then(() => { alert("✅ Berhasil disimpan!"); location.reload(); })
-        .catch(err => { alert("Gagal: " + err); btn.disabled = false; });
+        .then(() => { 
+            alert("✅ Data Berhasil Disimpan!"); 
+            // Reset form tanpa reload
+            document.querySelectorAll('.kegiatan-row').forEach((row, i) => { if(i > 0) row.remove(); });
+            document.querySelectorAll('.act-nama, .act-mulai, .act-akhir, .act-ket').forEach(i => i.value = '');
+            btn.disabled = false; btn.innerText = "SIMPAN DATA";
+        });
     });
 
     function ambilData() {
-        const nInput = document.getElementById('cariNama').value.trim().toLowerCase();
+        const nInput = document.getElementById('cariNama').value.toLowerCase();
         const bInput = document.getElementById('cariBulan').value;
         const loader = document.getElementById('loading');
-        const container = document.getElementById('hasilFilter');
-        if(!nInput) { alert("Masukkan Nama!"); return; }
-        loader.style.display = "block"; container.innerHTML = "";
-        fetch(scriptURL)
-        .then(res => res.json())
-        .then(data => {
+        loader.style.display = "block";
+        fetch(scriptURL).then(res => res.json()).then(data => {
             loader.style.display = "none";
-            // Simpan index asli dari sheet (index di array + 1 karena header disingkirkan)
+            data.sort((a, b) => {
+                let dA = new Date(a[0]), dB = new Date(b[0]);
+                if (dA - dB !== 0) return dA - dB;
+                return a[5].toString().localeCompare(b[5].toString());
+            });
             globalData = data.map((r, index) => ({ ...r, originalIndex: index + 1 }));
             const filtered = globalData.filter(r => r[1].toString().toLowerCase().includes(nInput) && (bInput === "" || r[8] === bInput));
             
-            if(filtered.length === 0) { container.innerHTML = `<div class="alert alert-warning">Data tidak ditemukan.</div>`; return; }
-            
-            let hPreview = `<table class="table table-bordered mt-3 table-sm small"><thead><tr class="table-success"><th>Tanggal</th><th>Kegiatan</th><th>Jam</th><th class="no-print">Aksi</th></tr></thead><tbody>`;
-            let hPrint = `<thead><tr><th>Tanggal (DD/MM/YYYY)</th><th>Kegiatan</th><th>Jam Mulai (Detik)</th><th>Jam Selesai (Detik)</th><th>Keterangan</th></tr></thead><tbody>`;
+            let hPreview = `<table class="table table-bordered table-sm small"><thead><tr class="table-success"><th>Tgl</th><th>Kegiatan</th><th>Jam</th><th class="no-print">Aksi</th></tr></thead><tbody>`;
+            let hPrint = `<thead><tr><th>Tanggal</th><th>Kegiatan</th><th>Mulai</th><th>Akhir</th><th>Ket</th></tr></thead><tbody>`;
             
             filtered.forEach(row => {
                 let d = new Date(row[0]);
                 let fTgl = d.getDate().toString().padStart(2,'0') + '/' + (d.getMonth()+1).toString().padStart(2,'0') + '/' + d.getFullYear();
-                let fMulai = formatKeDetik(row[5]);
-                let fAkhir = formatKeDetik(row[6]);
-                
-                hPreview += `<tr id="row-${row.originalIndex}">
-                    <td>${fTgl}</td>
-                    <td class="cell-kegiatan">${row[4]}</td>
-                    <td class="cell-jam">${fMulai} - ${fAkhir}</td>
-                    <td class="no-print">
-                        <button class="btn btn-warning btn-xs" onclick="editBaris(${row.originalIndex}, '${row[4]}', '${fMulai}', '${fAkhir}', '${row[7] || ''}')"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-danger btn-xs" onclick="hapusBaris(${row.originalIndex})"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>`;
-                hPrint += `<tr><td>${fTgl}</td><td>${row[4]}</td><td>${fMulai}</td><td>${fAkhir}</td><td>${row[7] || '-'}</td></tr>`;
+                let fM = formatKeDetik(row[5]), fA = formatKeDetik(row[6]);
+                hPreview += `<tr id="row-${row.originalIndex}"><td>${fTgl}</td><td>${row[4]}</td><td>${fM.substring(0,5)}</td><td class="no-print text-center">
+                    <button class="btn btn-warning btn-xs" onclick="editBaris(${row.originalIndex},'${row[4]}','${fM}','${fA}','${row[7]||''}')"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-danger btn-xs" onclick="hapusBaris(${row.originalIndex})"><i class="bi bi-trash"></i></button></td></tr>`;
+                hPrint += `<tr><td>${fTgl}</td><td>${row[4]}</td><td>${fM}</td><td>${fA}</td><td>${row[7]||'-'}</td></tr>`;
             });
-
-            container.innerHTML = hPreview + `</tbody></table>`;
+            document.getElementById('hasilFilter').innerHTML = hPreview + `</tbody></table>`;
             document.getElementById('tabelPrint').innerHTML = hPrint + `</tbody>`;
             document.getElementById('namaPrint').innerText = filtered[0][1];
             document.getElementById('bulanPrint').innerText = bInput || "SEMUA BULAN";
-            document.getElementById('infoPegawaiPrint').innerHTML = `<b>Nama:</b> ${filtered[0][1]} &nbsp; | &nbsp; <b>NIP:</b> ${filtered[0][2]} &nbsp; | &nbsp; <b>Jabatan:</b> ${filtered[0][3]}`;
+            document.getElementById('infoPegawaiPrint').innerHTML = `<b>Nama:</b> ${filtered[0][1]} | <b>NIP:</b> ${filtered[0][2]} | <b>Jabatan:</b> ${filtered[0][3]}`;
             document.getElementById('tglSekarang').innerText = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
             document.getElementById('btnCetak').style.display = "block";
-            document.getElementById('btnHapusPegawai').style.display = "inline-block";
         });
     }
 
-    function editBaris(index, kegiatan, mulai, akhir, ket) {
+    function editBaris(index, keg, m, a, k) {
         const tr = document.getElementById(`row-${index}`);
-        tr.innerHTML = `
-            <td>Edit Mode</td>
-            <td><input type="text" class="form-control form-control-sm" id="edit-keg-${index}" value="${kegiatan}"></td>
-            <td>
-                <input type="time" class="form-control form-control-sm d-inline w-auto" id="edit-mulai-${index}" value="${mulai.substring(0,5)}">
-                <input type="time" class="form-control form-control-sm d-inline w-auto" id="edit-akhir-${index}" value="${akhir.substring(0,5)}">
-                <input type="text" class="form-control form-control-sm mt-1" id="edit-ket-${index}" value="${ket}" placeholder="Ket">
-            </td>
-            <td>
-                <button class="btn btn-success btn-xs" onclick="simpanEdit(${index})">OK</button>
-                <button class="btn btn-secondary btn-xs" onclick="ambilData()">Batal</button>
-            </td>
-        `;
+        tr.innerHTML = `<td colspan="3"><input type="text" id="ed-k-${index}" class="form-control form-control-sm mb-1" value="${keg}">
+            <div class="d-flex gap-1"><input type="time" id="ed-m-${index}" class="form-control form-control-sm" value="${m.substring(0,5)}">
+            <input type="time" id="ed-a-${index}" class="form-control form-control-sm" value="${a.substring(0,5)}"></div></td>
+            <td class="no-print text-center"><button class="btn btn-success btn-xs" onclick="simpanEdit(${index})">OK</button></td>`;
     }
 
     function simpanEdit(index) {
-        const data = {
-            action: 'edit',
-            rowIndex: index,
-            kegiatan: document.getElementById(`edit-keg-${index}`).value,
-            mulai: document.getElementById(`edit-mulai-${index}`).value,
-            akhir: document.getElementById(`edit-akhir-${index}`).value,
-            ket: document.getElementById(`edit-ket-${index}`).value
-        };
-        fetch(scriptURL, { method: 'POST', body: JSON.stringify(data), mode: 'no-cors' })
-        .then(() => { alert("✅ Berhasil Diupdate!"); ambilData(); });
+        const data = { action: 'edit', rowIndex: index, kegiatan: document.getElementById(`ed-k-${index}`).value, mulai: document.getElementById(`ed-m-${index}`).value, akhir: document.getElementById(`ed-a-${index}`).value, ket: "" };
+        fetch(scriptURL, { method: 'POST', body: JSON.stringify(data), mode: 'no-cors' }).then(() => { alert("Update Berhasil!"); ambilData(); });
     }
 
     function hapusBaris(index) {
-        if(!confirm("Hapus baris kegiatan ini?")) return;
-        fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: 'hapusBaris', rowIndex: index }), mode: 'no-cors' })
-        .then(() => { alert("✅ Terhapus!"); ambilData(); });
-    }
-
-    function hapusData() {
-        const nama = document.getElementById('cariNama').value;
-        if (!confirm(`Hapus SEMUA data ${nama}?`)) return;
-        fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: 'hapus', nama: nama, bulan: document.getElementById('cariBulan').value }), mode: 'no-cors' })
-        .then(() => { alert("Permintaan hapus dikirim!"); location.reload(); });
+        if(confirm("Hapus baris ini?")) {
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: 'hapusBaris', rowIndex: index }), mode: 'no-cors' }).then(() => { alert("Terhapus!"); ambilData(); });
+        }
     }
 </script>
 </body>
